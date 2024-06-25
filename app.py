@@ -1,18 +1,15 @@
-import pygame, sys
+import pygame
+import sys
 import pygame.freetype
 from pygame.locals import QUIT
 from groq import Groq
 import os
 
-#from huggingface_hub import InferenceClient
-#client = InferenceClient("HuggingFaceH4/zephyr-7b-beta")
-
-
 client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
 )
 
-def text():
+def fetch_text():
     full_prompt = f"""Imagine you a NPC for a pygame about bartending. Max length is 10 words"""
     response = client.chat.completions.create(
         messages=[
@@ -42,32 +39,33 @@ font = pygame.freetype.SysFont(None, FONT_SIZE)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Pygame With Chat')
 
-
 # Input box dimensions and position
-input_box = pygame.Rect(50, HEIGHT - 100, WIDTH - 100, 50)
+input_box = pygame.Rect(50, HEIGHT - 100, WIDTH - 100, 100)
 input_color_inactive = BLUE
 input_color_active = WHITE
 input_color = input_color_inactive
 
 # Output box dimensions and position
-output_box = pygame.Rect(50, 50, WIDTH - 100, 50)
+output_box = pygame.Rect(50, 50, WIDTH - 100, 100)
 output_color = BLUE
 
 # Variables for input
 active = False
-text = text()
-output_text = text
+text = ''
+output_text = fetch_text()
 
 # Main loop
 running = True
 while running:
-   for event in pygame.event.get():
+    for event in pygame.event.get():
         if event.type == QUIT:
-              running = False
+            running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect
             if input_box.collidepoint(event.pos):
                 active = not active
+                if active:
+                    text = ''  # Clear text when the input box is clicked
             else:
                 active = False
             # Change the current color of the input box
@@ -76,25 +74,25 @@ while running:
             if active:
                 if event.key == pygame.K_RETURN:
                     output_text = text
-                    text = ''
+                    text = ''  # Clear text after saving
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
                 else:
                     text += event.unicode
-                    
-        
-       
-        # Render the screen
-        screen.fill(WHITE)
 
-        # Render the output box
-        pygame.draw.rect(screen, output_color, output_box, 0, border_radius=20)
-        font.render_to(screen, (output_box.x + 10, output_box.y + 10), output_text, BLACK)
+    # Render the screen
+    screen.fill(WHITE)
+    # Load background image
+    background = pygame.image.load("background.jpg").convert()
+    background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+    screen.blit(background, (0, 0))
+    # Render the output box
+    pygame.draw.rect(screen, output_color, output_box, 0, border_radius=20)
+    font.render_to(screen, (output_box.x + 10, output_box.y + 10), output_text, BLACK)
 
-        # Render the input box
-        pygame.draw.rect(screen, input_color, input_box, 0, border_radius=20)
-        font.render_to(screen, (input_box.x + 10, input_box.y + 10), text, BLACK)
+    # Render the input box
+    pygame.draw.rect(screen, input_color, input_box, 0, border_radius=20)
+    font.render_to(screen, (input_box.x + 10, input_box.y + 10), text, BLACK)
 
-        pygame.display.flip()
+    pygame.display.flip()
 pygame.quit()
-
