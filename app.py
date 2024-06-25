@@ -22,6 +22,20 @@ def fetch_text():
     )
     answer = response.choices[0].message.content
     return answer
+    
+def response(text):
+    full_prompt = f"""Imagine you a NPC for a pygame about bartending. Respone to {text} Max length is 10 words"""
+    response = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": full_prompt,
+            }
+        ],
+        model="llama3-8b-8192",
+    )
+    answer = response.choices[0].message.content
+    return answer
 
 pygame.init()
 
@@ -73,7 +87,7 @@ while running:
         if event.type == pygame.KEYDOWN:
             if active:
                 if event.key == pygame.K_RETURN:
-                    output_text = text
+                    output_text = response(text)
                     text = ''  # Clear text after saving
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
