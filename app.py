@@ -10,7 +10,7 @@ client = Groq(
 )
 
 def fetch_text():
-    full_prompt = f"""Imagine you a NPC for a pygame about bartending. Max length is 10 words"""
+    full_prompt = f"You are teacher here to help students with their homework. You will be given a problem and you will give them a solution."
     response = client.chat.completions.create(
         messages=[
             {
@@ -24,7 +24,7 @@ def fetch_text():
     return answer
     
 def response(text):
-    full_prompt = f"""Imagine you a NPC for a pygame about bartending. Respone to {text} Max length is 10 words"""
+    full_prompt = f"""You are teacher here to help students with their homework. You will be given a problem {text} and you will give them a solution. Max length is 10 words"""
     response = client.chat.completions.create(
         messages=[
             {
@@ -97,7 +97,7 @@ while running:
     # Render the screen
     screen.fill(WHITE)
     # Load background image
-    background = pygame.image.load("background.jpg").convert()
+    background = pygame.image.load("Teacher.jpg").convert()
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
     screen.blit(background, (0, 0))
     # Render the output box
